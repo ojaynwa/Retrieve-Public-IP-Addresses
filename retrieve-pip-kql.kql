@@ -1,0 +1,42 @@
+Resources
+| where type =~ 'microsoft.network/publicipaddresses'
+| extend ipAddress = properties.ipAddress
+| where isnotempty(ipAddress)
+| extend associatedResourceId = tostring(properties.ipConfiguration.id)
+| project 
+    subscriptionId,
+    PublicIPName = name,
+    IPAddress = ipAddress,
+    ResourceGroup = resourceGroup,
+    Location = location,
+    AllocationMethod = properties.publicIpAllocationMethod,
+    SKU = sku.name,
+    AssociatedResourceId = associatedResourceId,
+    ResourceId = id
+| join kind=leftouter (
+    Resources
+    | where type =~ 'microsoft.network/networkinterfaces'
+    | mv-expand ipconfig=properties.ipConfigurations
+    | project 
+        nicId = tostring(ipconfig.properties.publicIPAddress.id),
+        vmId = tostring(properties.virtualMachine.id),
+        nicName = name
+) on $left.ResourceId == $right.nicId
+| join kind=leftouter (
+    Resources
+    | where type =~ 'microsoft.compute/virtualmachines'
+    | project vmId = tolower(id), vmName = name, vmResourceGroup = resourceGroup
+) on vmId
+| project 
+    subscriptionId,
+    PublicIPName,
+    IPAddress,
+    ResourceGroup,
+    Location,
+    AllocationMethod,
+    SKU,
+    AssociatedVMName = vmName,
+    AssociatedVMResourceGroup = vmResourceGroup,
+    AssociatedResourceId,
+    ResourceId
+| sort by subscriptionId, PublicIPName asc
