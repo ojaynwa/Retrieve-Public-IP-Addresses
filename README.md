@@ -1,5 +1,5 @@
 # Retrieve-Public-IP-Addresses
-**The PowerShell** script uses the Get-AzPublicIpAddress cmdlet to retrieve public IP information across subscriptions.
+**The PowerShell** script (uploaded above - retrieve-pip-ps.ps1) uses the Get-AzPublicIpAddress cmdlet to retrieve public IP information across subscriptions.
 Loops through all subscriptions in the tenant.
 Retrieves complete metadata for each public IP 
 Identifies associated resources by parsing the IP configuration ID
@@ -24,7 +24,7 @@ Can identify various resource types including VMs, Load Balancers, Application G
 
 Navigate to Azure Resource Graph Explorer in the Azure Portal.
 <br>
-Paste the KQL query
+Paste the KQL query (uploaded in this repository - retrieve-pip-kql.kql)
 <br>
 Click Run query
 <br>
